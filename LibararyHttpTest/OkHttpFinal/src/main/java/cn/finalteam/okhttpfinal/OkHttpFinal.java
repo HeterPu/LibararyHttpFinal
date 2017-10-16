@@ -19,10 +19,16 @@ package cn.finalteam.okhttpfinal;
 import android.text.TextUtils;
 
 import java.io.InputStream;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import cn.finalteam.okhttpfinal.https.HttpsCerManager;
 import okhttp3.CookieJar;
@@ -44,11 +50,53 @@ public class OkHttpFinal {
     private OkHttpFinal() {
     }
 
+
+
+
     public synchronized void init(OkHttpFinalConfiguration configuration) {
         this.configuration = configuration;
 
+        X509TrustManager xtm = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                X509Certificate[] x509Certificates = new X509Certificate[0];
+                return x509Certificates;
+            }
+        };
+
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+
+            sslContext.init(null, new TrustManager[]{xtm}, new SecureRandom());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+
+
+
         long timeout = configuration.getTimeout();
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                //绕过安全证书
+                .sslSocketFactory(sslContext.getSocketFactory())
+                //绕过安全证书
+                .hostnameVerifier(DO_NOT_VERIFY)
+
                 .connectTimeout(timeout, TimeUnit.MILLISECONDS)
                 .writeTimeout(timeout, TimeUnit.MILLISECONDS)
                 .readTimeout(timeout, TimeUnit.MILLISECONDS);
