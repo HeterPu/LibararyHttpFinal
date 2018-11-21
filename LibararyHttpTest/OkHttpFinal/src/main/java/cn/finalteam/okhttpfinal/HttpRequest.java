@@ -266,7 +266,7 @@ public final class HttpRequest {
         }
     }
 
-    public static void executeRequest(Method method, String url, RequestParams params, OkHttpClient.Builder builder, BaseHttpRequestCallback callback) {
+    private static void executeRequest(Method method, String url, RequestParams params, OkHttpClient.Builder builder, BaseHttpRequestCallback callback) {
         if (!StringUtils.isEmpty(url)) {
             if(builder == null) {
                 builder = OkHttpFinal.getInstance().getOkHttpClientBuilder();
