@@ -39,8 +39,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'cn.finalteam:toolsfinal:1.1.5'
     compile 'com.alibaba:fastjson:1.1.46.android'
 
